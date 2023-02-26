@@ -3,10 +3,19 @@ const { all } = require("express/lib/application");
 const { timeSheetDataBase, taskSheetDataBase } = require('./mongoDB');
 const app = express();
 
+var cors = require('cors');
+
+app.use(cors({ origin: true, optionsSuccessStatus: 200, credentials: true }));
+app.options( "*", cors({ origin: true, optionsSuccessStatus: 200, credentials: true }) );
+
 app.use(express.json());
 
 const port = 5000
 app.listen(port);
+
+app.get('/getTask', getTask);
+app.get('/getSubTask', getSubTask);
+app.get('/getActivity', getActivity);
 
 app.post('/addTask', addTask);
 app.post('/addSubTask', addSubTask);
@@ -17,11 +26,19 @@ app.post('/deleteSubTask', deleteSubTask);
 app.post('/deleteActivity', deleteActivity);
 
 
-
+async function getActivity(req,res){
+    let TimeSheetData = await timeSheetDataBase.find();
+    console.log(TimeSheetData);
+    res.status(200).json({
+        TimeSheetData
+    })
+}
 
 async function addActivity(req, res) {
     try {
-        const { Date, Activity } = req.body;
+        const { Date, Activity } = req.body.newEntry;
+
+        console.log(Date, Activity);
 
         await timeSheetDataBase.findOneAndUpdate(
             { Date: Date },                            // filter
@@ -56,7 +73,13 @@ async function deleteActivity(req, res){
     }
 }
 
-
+async function getTask(req,res){
+    let TaskSheetData = await taskSheetDataBase.find();
+    console.log(TaskSheetData);
+    res.status(200).json({
+        TaskSheetData
+    })
+}
 
 async function addTask(req, res) {
     try {
@@ -95,7 +118,13 @@ async function deleteTask(req, res){
 
 }
 
-
+async function getSubTask(req,res){
+    let TaskSheetData = await taskSheetDataBase.find();
+    console.log(TaskSheetData);
+    res.status(200).json({
+        TaskSheetData
+    })
+}
 
 async function addSubTask(req, res){
 
