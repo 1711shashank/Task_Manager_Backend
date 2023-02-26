@@ -8,10 +8,13 @@ app.use(express.json());
 const port = 5000
 app.listen(port);
 
-//create read updated delete
 app.post('/addTask', addTask);
 app.post('/addSubTask', addSubTask);
 app.post('/addActivity', addActivity);
+
+app.post('/deleteTask', deleteTask);
+app.post('/deleteSubTask', deleteSubTask);
+app.post('/deleteActivity', deleteActivity);
 
 
 
@@ -25,9 +28,8 @@ async function addActivity(req, res) {
             { $addToSet: { Activity: Activity } },        // update
             { upsert: true, new: true }                    // conduction
         );
-        let temp = await timeSheetDataBase.find();
-        res.json({
-            Message: temp
+        res.status(200).json({
+            Message: "Activity Added"
         })
 
     } catch (err) {
@@ -36,6 +38,25 @@ async function addActivity(req, res) {
 
     // $pull in update => 2nd varible for delete
 }
+async function deleteActivity(req, res){
+    try {
+        const { _id, Activity } = req.body;
+
+        await timeSheetDataBase.findOneAndUpdate(
+            { _id: _id },                                  // filter
+            { $pull: { Activity: Activity } },             // update
+            { upsert: true, new: true }                    // conduction
+        );
+        res.status(200).json({
+            Message: "Activity Deleted"
+        })
+
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
 
 async function addTask(req, res) {
     try {
@@ -46,14 +67,35 @@ async function addTask(req, res) {
         });
 
         await newTask.save();
-        let temp = await taskSheetDataBase.find();
-        res.json({
-            Message: temp
+
+        res.status(200).json({
+            Message: "Task Deleted"
         })
     } catch (err) {
         console.log(err);
     }
 }
+
+async function deleteTask(req, res){
+    try {
+        const { _id } = req.body;
+
+        let taskToBeDeleted = await taskSheetDataBase.findOne({ _id: _id });
+        if (taskToBeDeleted) {
+            await taskSheetDataBase.deleteOne(taskToBeDeleted['_id']);
+        }
+        
+        res.status(200).json({
+            Message: "Task Deleted"
+        })
+
+    } catch (err) {
+        console.log(err);
+    }
+
+}
+
+
 
 async function addSubTask(req, res){
 
@@ -65,11 +107,9 @@ async function addSubTask(req, res){
             { $addToSet: { SubTasks: SubTask } },               // update
             { upsert: false, new: true }                        // conduction
         );
-
-        let temp = await taskSheetDataBase.find();
         
-        res.json({
-            Message: temp
+        res.status(200).json({
+            Message: "Sub Task Added"
         })
 
         
@@ -78,92 +118,21 @@ async function addSubTask(req, res){
     }
 }
 
+async function deleteSubTask(req, res){
+    try {
+        const { TaskId, SubTask } = req.body;
 
+        await taskSheetDataBase.findOneAndUpdate(
+            { _id: TaskId },                            
+            { $pull: { SubTasks: SubTask } },                    
+            { upsert: true, new: true }                   
+        )
 
+        res.status(200).json({
+            Message: "Sub Task Deleted"
+        })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-async function readTask(req, res) {
-    let allTask = await taskDataBase.find();
-    res.send(allTask);
-}
-
-async function updateTask(req, res) {
-    let oldTask = req.body.old;
-    let newTask = req.body.new;
-
-    let taskToBeUpdated = await taskDataBase.findOne({ Task: oldTask });
-    if (taskToBeUpdated) {
-        taskToBeUpdated['Task'] = newTask;
-        taskToBeUpdated.save();
+    } catch (err) {
+        console.log(err);
     }
-
-    res.json({
-        message: "Task has been updated"
-    })
-
-}
-
-async function deleteTask(req, res) {
-
-    let taskToBeDeleted = await taskDataBase.findOne({ Task: req.body.Task });
-    if (taskToBeDeleted) {
-        await taskDataBase.deleteOne(taskToBeDeleted['_id']);
-    }
-
-    res.json({
-        message: "Task has been removed"
-    })
 }
