@@ -28,7 +28,6 @@ app.post('/deleteActivity', deleteActivity);
 
 async function getActivity(req,res){
     let TimeSheetData = await timeSheetDataBase.find();
-    console.log(TimeSheetData);
     res.status(200).json({
         TimeSheetData
     })
@@ -75,7 +74,6 @@ async function deleteActivity(req, res){
 
 async function getTask(req,res){
     let TaskSheetData = await taskSheetDataBase.find();
-    console.log(TaskSheetData);
     res.status(200).json({
         TaskSheetData
     })
@@ -83,7 +81,7 @@ async function getTask(req,res){
 
 async function addTask(req, res) {
     try {
-        const { TaskName, SubTasks } = req.body;
+        const { TaskName, SubTasks } = req.body.newEntry;
 
         const newTask = new taskSheetDataBase({
             TaskName:TaskName, SubTasks:SubTasks
@@ -92,7 +90,7 @@ async function addTask(req, res) {
         await newTask.save();
 
         res.status(200).json({
-            Message: "Task Deleted"
+            Message: "Task Added"
         })
     } catch (err) {
         console.log(err);
@@ -120,7 +118,6 @@ async function deleteTask(req, res){
 
 async function getSubTask(req,res){
     let TaskSheetData = await taskSheetDataBase.find();
-    console.log(TaskSheetData);
     res.status(200).json({
         TaskSheetData
     })
@@ -130,11 +127,12 @@ async function addSubTask(req, res){
 
     try {
         const {TaskId, SubTask} = req.body;
+        console.log(req.body);
 
         await taskSheetDataBase.findOneAndUpdate(
             { _id: TaskId },                                     // filter
             { $addToSet: { SubTasks: SubTask } },               // update
-            { upsert: false, new: true }                        // conduction
+            { upsert: true, new: true }                        // conduction
         );
         
         res.status(200).json({
@@ -149,11 +147,12 @@ async function addSubTask(req, res){
 
 async function deleteSubTask(req, res){
     try {
-        const { TaskId, SubTask } = req.body;
+        const { TaskId, SubTaskId } = req.body.subTaskToBeDeleted;
+        console.log("delete",req.body);
 
         await taskSheetDataBase.findOneAndUpdate(
-            { _id: TaskId },                            
-            { $pull: { SubTasks: SubTask } },                    
+            { 'SubTasks.SubTaskId': SubTaskId, _id:TaskId },                            
+            { $pull: {SubTasks:{SubTaskId: SubTaskId }}},                    
             { upsert: true, new: true }                   
         )
 
