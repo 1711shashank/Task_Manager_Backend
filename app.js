@@ -37,8 +37,6 @@ async function addActivity(req, res) {
     try {
         const { Date, Activity } = req.body.newEntry;
 
-        console.log(Date, Activity);
-
         await timeSheetDataBase.findOneAndUpdate(
             { Date: Date },                            // filter
             { $addToSet: { Activity: Activity } },        // update
@@ -58,15 +56,14 @@ async function deleteActivity(req, res){
     try {
         const { _id, id } = req.body;
         
-        const tt = await timeSheetDataBase.findOneAndUpdate(
+        await timeSheetDataBase.findOneAndUpdate(
             { 'Activity.id': id, _id:_id },             // filter
             { $pull: { Activity:{id:id} } },             // update
             { upsert: true, new: true }                  // conduction
         );
 
-
         res.status(200).json({
-            Message: await timeSheetDataBase.find()
+            Message: "Activity Deleted"
         })
 
     } catch (err) {
