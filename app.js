@@ -56,15 +56,17 @@ async function addActivity(req, res) {
 }
 async function deleteActivity(req, res){
     try {
-        const { _id, Activity } = req.body;
-
-        await timeSheetDataBase.findOneAndUpdate(
-            { _id: _id },                                  // filter
-            { $pull: { Activity: Activity } },             // update
-            { upsert: true, new: true }                    // conduction
+        const { _id, id } = req.body;
+        
+        const tt = await timeSheetDataBase.findOneAndUpdate(
+            { 'Activity.id': id, _id:_id },             // filter
+            { $pull: { Activity:{id:id} } },             // update
+            { upsert: true, new: true }                  // conduction
         );
+
+
         res.status(200).json({
-            Message: "Activity Deleted"
+            Message: await timeSheetDataBase.find()
         })
 
     } catch (err) {
