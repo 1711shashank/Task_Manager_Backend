@@ -14,14 +14,21 @@ mongoose.connect(db_link)
 
 // database stracture
 const timeSheetSchema = mongoose.Schema({
+   email:String,
     Date : String,
     Activity : []
 })
 const taskSheetSchema = mongoose.Schema({
+    email:String,
     TaskName : String,
     SubTasks : []
+})
+const UserSchema = mongoose.Schema({
+    name: String,
+    email: String
 })
 
 const timeSheetDataBase = mongoose.model("timeSheetDataBase", timeSheetSchema);
 const taskSheetDataBase = mongoose.model("taskSheetDataBase", taskSheetSchema);
-module.exports = {timeSheetDataBase, taskSheetDataBase};
+const User = mongoose.model("User", UserSchema);
+module.exports = {timeSheetDataBase, taskSheetDataBase, User};
