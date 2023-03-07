@@ -1,6 +1,7 @@
 const axios = require("axios");
 const qs = require("qs");
 const {User} = require("./mongoDB");
+
 exports.validateCallback = async (req, res) => {
   try {
     console.log(req.query);
@@ -77,6 +78,7 @@ exports.validateCallback = async (req, res) => {
 };
 
 exports.oauth = async (req, res) => {
+  console.log('auth');
   const options = {
     redirect_uri: "http://localhost:5000/validate-callback",
     client_id: process.env.GOOGLE_CLIENT_ID,
