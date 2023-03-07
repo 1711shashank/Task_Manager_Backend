@@ -74,12 +74,12 @@ async function addActivity(req, res) {
 
 async function addSubTask(req, res) {
     try {
-        const { TaskId, SubTask } = req.body;
+        const { taskId, subTask } = req.body;
         console.log(req.body);
 
         await taskSheetDataBase.findOneAndUpdate(
-            { _id: TaskId }, // filter
-            { $addToSet: { SubTasks: SubTask } }, // update
+            { _id: taskId }, // filter
+            { $addToSet: { SubTasks: subTask } }, // update
             { upsert: true, new: true } // conduction
         );
 
@@ -93,11 +93,13 @@ async function addSubTask(req, res) {
 
 async function addTask(req, res) {
     try {
-        const { TaskName, SubTasks } = req.body.newEntry;
+        const { taskName, subTasks } = req.body.newEntry;
+
+        console.log(taskName, subTasks)
 
         const newTask = new taskSheetDataBase({
-            TaskName: TaskName,
-            SubTasks: SubTasks,
+            TaskName: taskName,
+            SubTasks: subTasks,
         });
 
         await newTask.save();
@@ -121,9 +123,9 @@ async function getActivity(req, res) {
 }
 
 async function getTask(req, res) {
-    let TaskSheetData = await taskSheetDataBase.find();
+    let taskSheetData = await taskSheetDataBase.find();
     res.status(200).json({
-        TaskSheetData,
+        taskSheetData,
     });
 }
 
@@ -235,8 +237,8 @@ async function updateTask(req, res) {
 
 async function updateActivity(req, res) {
     try {
-        const { id1,id2, newTopic,newDate,newDescription } = req.body.activityToBeUpdated;
-        console.log(id1,id2, newTopic,newDate,newDescription);
+        const { id1, id2, newTopic, newDate, newDescription } = req.body.activityToBeUpdated;
+        console.log(id1, id2, newTopic, newDate, newDescription);
 
         await timeSheetDataBase.updateOne(
             { "Activity.id": id2, _id: id1 },
