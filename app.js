@@ -31,7 +31,7 @@ const port = 5000;
 app.listen(port);
 
 app.get("/getTask", getTask);
-app.get("/getSubTask", getSubTask);
+// app.get("/getSubTask", getSubTask);
 app.get("/getActivity", getActivity);
 
 app.post("/addTask", addTask);
@@ -116,9 +116,12 @@ async function addTask(req, res) {
 
 //Get
 async function getActivity(req, res) {
-    let TimeSheetData = await timeSheetDataBase.find();
+    let timeSheetData = await timeSheetDataBase.find();
+
+    timeSheetData.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+    
     res.status(200).json({
-        TimeSheetData,
+        timeSheetData,
     });
 }
 
@@ -129,12 +132,12 @@ async function getTask(req, res) {
     });
 }
 
-async function getSubTask(req, res) {
-    let TaskSheetData = await taskSheetDataBase.find();
-    res.status(200).json({
-        TaskSheetData,
-    });
-}
+// async function getSubTask(req, res) {
+//     let taskSheetData = await taskSheetDataBase.find();
+//     res.status(200).json({
+//         taskSheetData,
+//     });
+// }
 
 
 
@@ -238,15 +241,26 @@ async function updateTask(req, res) {
 async function updateActivity(req, res) {
     try {
         const { id1, id2, newTopic, newDate, newDescription } = req.body.activityToBeUpdated;
-        console.log(id1, id2, newTopic, newDate, newDescription);
+        const newActivity = { id: id2, Topic: newTopic, Description: newDescription };
 
-        await timeSheetDataBase.updateOne(
-            { "Activity.id": id2, _id: id1 },
-            { "Activity.$.Topic": newTopic, "Activity.$.Date": newDate, "Activity.$.Description": newDescription },
-            { upsert: false }
+        console.log(newActivity);
+
+        await timeSheetDataBase.findOneAndUpdate(
+            { "Activity.id": id2, _id: id1 }, // filter
+            { $pull: { Activity: { id: id2 } } }, // update
+            { upsert: true, new: true } // conduction
         );
+
+
+        await timeSheetDataBase.findOneAndUpdate(
+            { Date: newDate }, // filter
+            { $addToSet: { Activity: newActivity } }, // update
+            { upsert: true, new: true } // conduction
+        );
+
+
         res.status(200).json({
-            Message: "Activity Added",
+            Message: "Update Activity",
         });
     } catch (err) {
         console.log(err);
