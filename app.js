@@ -55,13 +55,18 @@ app.get("/validate-callback", validateCallback);
 //Add
 async function addActivity(req, res) {
     try {
-        const { Date, Activity } = req.body.newEntry;
+        const { Email, Date, Activity } = req.body.newEntry;
 
-        await timeSheetDataBase.findOneAndUpdate(
-            { Date: Date }, // filter
+        console.log(Email, Date, Activity);
+
+        const temp = await timeSheetDataBase.findOneAndUpdate(
+            { Date: Date, Email: Email }, // filter
             { $addToSet: { Activity: Activity } }, // update
             { upsert: true, new: true } // conduction
         );
+
+        console.log({temp});
+
         res.status(200).json({
             Message: "Activity Added",
         });
@@ -93,11 +98,12 @@ async function addSubTask(req, res) {
 
 async function addTask(req, res) {
     try {
-        const { taskName, subTasks } = req.body.newEntry;
+        const { email, taskName, subTasks } = req.body.newEntry;
 
-        console.log(taskName, subTasks)
+        console.log("Add Task", email, taskName, subTasks);
 
         const newTask = new taskSheetDataBase({
+            Email: email,
             TaskName: taskName,
             SubTasks: subTasks,
         });
@@ -132,14 +138,6 @@ async function getTask(req, res) {
     });
 }
 
-// async function getSubTask(req, res) {
-//     let taskSheetData = await taskSheetDataBase.find();
-//     res.status(200).json({
-//         taskSheetData,
-//     });
-// }
-
-
 
 //Delete
 async function deleteActivity(req, res) {
@@ -162,6 +160,8 @@ async function deleteActivity(req, res) {
 
 async function deleteTask(req, res) {
     try {
+        console.log("delete task");
+
         const { _id } = req.body;
 
         let taskToBeDeleted = await taskSheetDataBase.findOne({ _id: _id });
@@ -179,6 +179,8 @@ async function deleteTask(req, res) {
 
 async function deleteSubTask(req, res) {
     try {
+        console.log("delete sub task");
+
         const { taskId, subTaskId } = req.body.subTaskToBeDeleted;
         console.log("delete", req.body);
 
@@ -220,6 +222,7 @@ async function updateSubTask(req, res) {
 
 async function updateTask(req, res) {
     try {
+        console.log("updateTask");
         const { taskId, newTaskName } = req.body.taskToBeUpdated;
         console.log(taskId, newTaskName);
 

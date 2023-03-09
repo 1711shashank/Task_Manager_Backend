@@ -6,23 +6,25 @@ const db_link = process.env.MONGO_URL;
 
 mongoose.set('strictQuery', false);
 mongoose.connect(db_link)
-    .then(()=>{
+    .then(() => {
         console.log("db connected");
-    }).catch((err)=>{
+    }).catch((err) => {
         console.log(err);
     })
 
 // database stracture
 const timeSheetSchema = mongoose.Schema({
-   email:String,
-    Date : String,
-    Activity : []
+    Email: String,
+    Date: String,
+    Activity: []
+
 })
 const taskSheetSchema = mongoose.Schema({
-    email:String,
-    TaskName : String,
-    SubTasks : []
+    Email: String,
+    TaskName: String,
+    SubTasks: []
 })
+
 const UserSchema = mongoose.Schema({
     name: String,
     email: String
@@ -31,4 +33,4 @@ const UserSchema = mongoose.Schema({
 const timeSheetDataBase = mongoose.model("timeSheetDataBase", timeSheetSchema);
 const taskSheetDataBase = mongoose.model("taskSheetDataBase", taskSheetSchema);
 const User = mongoose.model("User", UserSchema);
-module.exports = {timeSheetDataBase, taskSheetDataBase, User};
+module.exports = { timeSheetDataBase, taskSheetDataBase, User };
