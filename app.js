@@ -59,13 +59,12 @@ async function addActivity(req, res) {
 
         console.log(Email, Date, Activity);
 
-        const temp = await timeSheetDataBase.findOneAndUpdate(
+        await timeSheetDataBase.findOneAndUpdate(
             { Date: Date, Email: Email }, // filter
             { $addToSet: { Activity: Activity } }, // update
             { upsert: true, new: true } // conduction
         );
 
-        console.log({temp});
 
         res.status(200).json({
             Message: "Activity Added",
@@ -98,14 +97,14 @@ async function addSubTask(req, res) {
 
 async function addTask(req, res) {
     try {
-        const { email, taskName, subTasks } = req.body.newEntry;
+        const { Email, TaskName, SubTasks } = req.body.newEntry;
 
-        console.log("Add Task", email, taskName, subTasks);
+        console.log("Add Task", Email, TaskName, SubTasks);
 
         const newTask = new taskSheetDataBase({
-            Email: email,
-            TaskName: taskName,
-            SubTasks: subTasks,
+            Email: Email,
+            TaskName: TaskName,
+            SubTasks: SubTasks,
         });
 
         await newTask.save();
@@ -122,8 +121,9 @@ async function addTask(req, res) {
 
 //Get
 async function getActivity(req, res) {
-    let timeSheetData = await timeSheetDataBase.find();
-
+    console.log("getActivity", req.query.Email);
+    
+    let timeSheetData = await timeSheetDataBase.find( {Email : req.query.Email} );
     timeSheetData.sort((a, b) => new Date(b.Date) - new Date(a.Date));
     
     res.status(200).json({
@@ -132,7 +132,7 @@ async function getActivity(req, res) {
 }
 
 async function getTask(req, res) {
-    let taskSheetData = await taskSheetDataBase.find();
+    let taskSheetData = await taskSheetDataBase.find({Email : req.query.Email});
     res.status(200).json({
         taskSheetData,
     });
