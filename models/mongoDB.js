@@ -25,12 +25,7 @@ const taskSheetSchema = mongoose.Schema({
     SubTasks: []
 })
 
-const UserSchema = mongoose.Schema({
-    name: String,
-    email: String
-})
 
 const timeSheetDataBase = mongoose.model("timeSheetDataBase", timeSheetSchema);
 const taskSheetDataBase = mongoose.model("taskSheetDataBase", taskSheetSchema);
-const User = mongoose.model("User", UserSchema);
-module.exports = { timeSheetDataBase, taskSheetDataBase, User };
+module.exports = { timeSheetDataBase, taskSheetDataBase };
