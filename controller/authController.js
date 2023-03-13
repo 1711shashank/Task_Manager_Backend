@@ -38,33 +38,20 @@ exports.validateCallback = async (req, res) => {
 
         console.log(userInfo.data);
 
-        const userData = await User.findOneAndUpdate(
-            { email: userInfo.data.email },
-            { name: userInfo.data.name, email: userInfo.data.email },
-            { upsert: true, new: true, }
-        );
-
-        if (!userData) {
-            return res.status(401).json({
-                success: false,
-                message: "Login again, please try again",
-            });
-        }
-
         return res.redirect(
-            `https://taskmanagger.netlify.app/?email=${userInfo.data.email}&name=${userInfo.data.name}`
+            `https://task-manager-e3i7.onrender.com/?email=${userInfo.data.email}&name=${userInfo.data.name}`
         )
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Something went wrong" });
+        return res.status(500).json({ message: "Something went wrong 123" });
     }
 };
 
 exports.oauth = async (req, res) => {
     console.log('auth');
     const options = {
-        redirect_uri: "https://task-manager-backend-bnjq.onrender.com/validate-callback",
+        redirect_uri: `https://task-manager-backend-bnjq.onrender.com/validate-callback`,
         client_id: process.env.GOOGLE_CLIENT_ID,
         access_type: "offline",
         response_type: "code",

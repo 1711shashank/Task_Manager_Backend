@@ -29,7 +29,7 @@ app.options("/", (req, res) => {
 
 
 
-const port = process.env.PORT || 5000;
+const port = 5000 || process.env.PORT;
 app.listen(port);
 
 app.get("/getTask", getTask);
