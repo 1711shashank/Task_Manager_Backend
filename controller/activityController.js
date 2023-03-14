@@ -52,7 +52,7 @@ module.exports.deleteActivity = async function deleteActivity(req, res) {
 
 module.exports.updateActivity = async function updateActivity(req, res) {
     try {
-        const { id1, id2, newTopic, newDate, newDescription } = req.body.activityToBeUpdated;
+        const { id1, id2, email, newTopic, newDate, newDescription } = req.body.activityToBeUpdated;
         const newActivity = { id: id2, Topic: newTopic, Description: newDescription };
 
         console.log(newActivity);
@@ -65,7 +65,7 @@ module.exports.updateActivity = async function updateActivity(req, res) {
 
 
         await timeSheetDataBase.findOneAndUpdate(
-            { Date: newDate }, // filter
+            { Date: newDate, Email: email }, // filter
             { $addToSet: { Activity: newActivity } }, // update
             { upsert: true, new: true } // conduction
         );
