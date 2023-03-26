@@ -12,20 +12,17 @@ mongoose.connect(db_link)
         console.log(err);
     })
 
-// database stracture
-const timeSheetSchema = mongoose.Schema({
-    Email: String,
-    Date: String,
-    Activity: []
+const datasheet = mongoose.Schema([{
+    email: { type: String, unique: true },
+    name: String,
+    chatCard: [
+        {
+            friendEmail: String,
+            friendName : String,
+            messageCard:[]
+        }
+    ]
+}])
 
-})
-const taskSheetSchema = mongoose.Schema({
-    Email: String,
-    TaskName: String,
-    SubTasks: []
-})
-
-
-const timeSheetDataBase = mongoose.model("timeSheetDataBase", timeSheetSchema);
-const taskSheetDataBase = mongoose.model("taskSheetDataBase", taskSheetSchema);
-module.exports = { timeSheetDataBase, taskSheetDataBase };
+const db = mongoose.model("datasheet", datasheet);
+module.exports = { db };
